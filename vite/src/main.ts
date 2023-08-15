@@ -5,9 +5,11 @@ const { canvas } = init();
 kontra.initKeys();
 
 const ship = Sprite({
+  type: 'ship',
   x: 300,
   y: 300,
   radius: 6,
+  dt: 0,
   render() {
     if (this.context != null) {
       this.context.strokeStyle = 'white';
@@ -28,6 +30,7 @@ const ship = Sprite({
       }
       const cos = Math.cos(this.rotation);
       const sin = Math.sin(this.rotation);
+
       if (kontra.keyPressed(['arrowkeyup', 'w'])) {
         this.ddx = cos * 0.05;
         this.ddy = sin * 0.05;
@@ -35,16 +38,35 @@ const ship = Sprite({
         this.ddx = 0;
         this.ddy = 0;
       }
+
       this.advance();
       if (this.velocity.length() > 5) {
         if (this.dx != null) this.dx *= 0.95;
         if (this.dy != null) this.dy *= 0.95;
       }
+      this.dt = (this.dt as number) + 1 / 60;
+      if (kontra.keyPressed('space') && this.dt > 0.25) {
+        this.dt = 0;
+
+        let bullet = Sprite({
+          type: 'bullet',
+          color: 'white',
+          x: this.x + cos * 12,
+          y: this.y + sin * 12,
+          dx: this.dx + cos * 5,
+          dy: this.dy + sin * 5,
+          ttl: 50,
+          radius: 2,
+          width: 2,
+          height: 2,
+        });
+        sprites.push(bullet);
+      }
     }
   },
 });
 
-const sprites: Sprite[] = [];
+let sprites: Sprite[] = [];
 sprites.push(ship);
 
 function createAsteroid(): void {
@@ -91,6 +113,26 @@ const loop = GameLoop({
       }
       sprite.update();
     });
+    // collision detection
+    for (let i = 0; i < sprites.length; i++) {
+      if (sprites[i].type === 'asteroid') {
+        for (let j = 0; j < sprites.length; j++) {
+          if (sprites[j].type !== 'asteroid') {
+            let asteroid = sprites[i];
+            let sprite = sprites[j];
+            let dx = asteroid.x - sprite.y;
+            let dy = asteroid.y - sprite.y;
+            if (Math.hypot(dx, dy) < asteroid.radius + sprite.radius) {
+              asteroid.ttl = 0;
+              sprite.ttl = 0;
+              break;
+            }
+          }
+        }
+      }
+    }
+
+    sprites = sprites.filter((sprite) => sprite.isAlive());
   },
   render: function () {
     sprites.forEach((sprite) => {
