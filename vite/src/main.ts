@@ -1,15 +1,8 @@
-import { Sprite, init, GameLoop } from 'kontra';
+import kontra, { Sprite, init, GameLoop } from 'kontra';
 
 const { canvas } = init();
 
-const sprite = Sprite({
-  x: 100,
-  y: 80,
-  color: 'red',
-  width: 20,
-  height: 40,
-  dx: 2,
-});
+kontra.initKeys();
 
 const ship = Sprite({
   x: 300,
@@ -24,6 +17,29 @@ const ship = Sprite({
       this.context.lineTo(-3, 5);
       this.context.closePath();
       this.context.stroke();
+    }
+  },
+  update() {
+    if (this.rotation != null) {
+      if (kontra.keyPressed(['arrowleft', 'a'])) {
+        this.rotation = this.rotation + kontra.degToRad(-4);
+      } else if (kontra.keyPressed(['arrowright', 'd'])) {
+        this.rotation = this.rotation + kontra.degToRad(4);
+      }
+      const cos = Math.cos(this.rotation);
+      const sin = Math.sin(this.rotation);
+      if (kontra.keyPressed(['arrowkeyup', 'w'])) {
+        this.ddx = cos * 0.05;
+        this.ddy = sin * 0.05;
+      } else {
+        this.ddx = 0;
+        this.ddy = 0;
+      }
+      this.advance();
+      if (this.velocity.length() > 5) {
+        if (this.dx != null) this.dx *= 0.95;
+        if (this.dy != null) this.dy *= 0.95;
+      }
     }
   },
 });
@@ -57,11 +73,6 @@ for (let i = 0; i < 4; i++) {
 
 const loop = GameLoop({
   update: function () {
-    sprite.update();
-
-    if (sprite.x > canvas.width - 300) {
-      sprite.x = -sprite.width;
-    }
     sprites.forEach((sprite) => {
       // sprite is beyond the left edge
       const radius: number = sprite.radius;
