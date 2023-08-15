@@ -48,7 +48,7 @@ const ship = Sprite({
       if (kontra.keyPressed('space') && this.dt > 0.25) {
         this.dt = 0;
 
-        let bullet = Sprite({
+        const bullet = Sprite({
           type: 'bullet',
           color: 'white',
           x: this.x + cos * 12,
@@ -69,14 +69,14 @@ const ship = Sprite({
 let sprites: Sprite[] = [];
 sprites.push(ship);
 
-function createAsteroid(): void {
+function createAsteroid(x: number, y: number, radius: number): void {
   const asteroid = Sprite({
     type: 'asteroid',
-    x: 100,
-    y: 100,
+    x,
+    y,
+    radius,
     dx: Math.random() * 4 - 2,
     dy: Math.random() * 4 - 2,
-    radius: 30,
     render() {
       if (this.context != null) {
         this.context.strokeStyle = 'white';
@@ -90,7 +90,7 @@ function createAsteroid(): void {
 }
 
 for (let i = 0; i < 4; i++) {
-  createAsteroid();
+  createAsteroid(100, 100, 30);
 }
 
 const loop = GameLoop({
@@ -113,6 +113,7 @@ const loop = GameLoop({
       }
       sprite.update();
     });
+
     // collision detection
     for (let i = 0; i < sprites.length; i++) {
       if (sprites[i].type === 'asteroid') {
@@ -125,6 +126,13 @@ const loop = GameLoop({
             if (Math.hypot(dx, dy) < asteroid.radius + sprite.radius) {
               asteroid.ttl = 0;
               sprite.ttl = 0;
+
+              if (asteroid.radius > 10) {
+                for (var x = 0; x < 3; x++) {
+                  createAsteroid(asteroid.x, asteroid.y, asteroid.radius / 2.5);
+                }
+              }
+
               break;
             }
           }
