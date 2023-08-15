@@ -5,9 +5,17 @@ module.exports = {
     },
     'extends': [
         'eslint:recommended',
-        'plugin:@typescript-eslint/recommended'
+        'plugin:@typescript-eslint/recommended',
+        'standard-with-typescript'
     ],
     'overrides': [
+        {
+            'files': ['*.js', '*.jsx', '*.ts', '*.tsx'],
+            'extends': 'standard-with-typescript',
+            'parserOptions': {
+              'project': './tsconfig.json'
+            }
+          }
     ],
     'parser': '@typescript-eslint/parser',
     'parserOptions': {
