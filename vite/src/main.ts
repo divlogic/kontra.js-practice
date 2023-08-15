@@ -13,7 +13,27 @@ const sprite = Sprite({
   dx: 2
 
 })
-const asteroids: Sprite[] = []
+
+const ship = Sprite({
+  x: 300,
+  y: 300,
+  radius: 6,
+  render () {
+    if (this.context != null) {
+      this.context.strokeStyle = 'white'
+      this.context.beginPath()
+      this.context.moveTo(-3, -5)
+      this.context.lineTo(12, 0)
+      this.context.lineTo(-3, 5)
+      this.context.closePath()
+      this.context.stroke()
+    }
+  }
+
+})
+
+const sprites: Sprite[] = []
+sprites.push(ship)
 
 function createAsteroid (): void {
   const asteroid = Sprite({
@@ -32,13 +52,12 @@ function createAsteroid (): void {
       }
     }
   })
-  asteroids.push(asteroid)
+  sprites.push(asteroid)
 }
 
 for (let i = 0; i < 4; i++) {
   createAsteroid()
 }
-console.log(asteroids)
 
 const loop = GameLoop({
   update: function () {
@@ -47,34 +66,29 @@ const loop = GameLoop({
     if (sprite.x > canvas.width - 300) {
       sprite.x = -sprite.width
     }
-    asteroids.forEach(asteroid => {
-    // asteroid is beyond the left edge
-      const radius: number = asteroid.radius
-      if (asteroid.x < -radius) {
-        asteroid.x = canvas.width + radius
-        console.log('asteroid action 1')
-      } else if (asteroid.x > canvas.width + radius) {
-      // asteroid is beyond the right edge
-        asteroid.x = 0 - radius
-        console.log('asteroid action 2')
+    sprites.forEach(sprite => {
+      // sprite is beyond the left edge
+      const radius: number = sprite.radius
+      if (sprite.x < -radius) {
+        sprite.x = canvas.width + radius
+      } else if (sprite.x > canvas.width + radius) {
+      // sprite is beyond the right edge
+        sprite.x = 0 - radius
       }
-      // asteroid is beyond the top edge
-      if (asteroid.y < -radius) {
-        asteroid.y = canvas.height + radius
-        console.log('asteroid action 3')
-      } else if (asteroid.y > canvas.height + radius) {
-      // asteroid is beyond the bottom edge
-        asteroid.y = -radius
-        console.log('asteroid action 4')
+      // sprite is beyond the top edge
+      if (sprite.y < -radius) {
+        sprite.y = canvas.height + radius
+      } else if (sprite.y > canvas.height + radius) {
+      // sprite is beyond the bottom edge
+        sprite.y = -radius
       }
-      asteroid.update()
+      sprite.update()
     })
   },
   render: function () {
-    asteroids.forEach(asteroid => {
-      asteroid.render()
+    sprites.forEach(sprite => {
+      sprite.render()
     })
-    sprite.render()
   }
 })
 
