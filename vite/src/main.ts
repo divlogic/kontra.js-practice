@@ -34,6 +34,9 @@ const ship = Sprite({
       if (kontra.keyPressed(['arrowkeyup', 'w'])) {
         this.ddx = cos * 0.05;
         this.ddy = sin * 0.05;
+      } else if (kontra.keyPressed(['arrowkeydown', 's'])) {
+        this.ddx = cos * -0.05;
+        this.ddy = sin * -0.05;
       } else {
         this.ddx = 0;
         this.ddy = 0;
@@ -48,19 +51,27 @@ const ship = Sprite({
       if (kontra.keyPressed('space') && this.dt > 0.25) {
         this.dt = 0;
 
-        const bullet = Sprite({
-          type: 'bullet',
-          color: 'white',
-          x: this.x + cos * 12,
-          y: this.y + sin * 12,
-          dx: this.dx + cos * 5,
-          dy: this.dy + sin * 5,
-          ttl: 50,
-          radius: 2,
-          width: 2,
-          height: 2,
-        });
-        sprites.push(bullet);
+        if (
+          typeof this.x === 'number' &&
+          typeof this.y === 'number' &&
+          typeof this.dx === 'number' &&
+          typeof this.dy === 'number'
+        ) {
+          const bullet = Sprite({
+            type: 'bullet',
+            color: 'white',
+            x: this.x + cos * 12,
+            y: this.y + sin * 12,
+            dx: this.dx + cos * 5,
+            dy: this.dy + sin * 5,
+            ttl: 50,
+            radius: 2,
+            width: 2,
+            height: 2,
+          });
+
+          sprites.push(bullet);
+        }
       }
     }
   },
@@ -77,6 +88,7 @@ function createAsteroid(x: number, y: number, radius: number): void {
     radius,
     dx: Math.random() * 4 - 2,
     dy: Math.random() * 4 - 2,
+
     render() {
       if (this.context != null) {
         this.context.strokeStyle = 'white';
